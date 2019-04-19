@@ -16,12 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import { i18n } from '@kbn/i18n';
 import { FormattedMessage } from '@kbn/i18n/react';
 import React from 'react';
 import { toastNotifications } from 'ui/notify';
-import { uiCapabilities } from 'ui/capabilities';
 import {
   SavedObjectFinder,
   SavedObjectMetaData,
@@ -37,11 +35,11 @@ import {
   // @ts-ignore
   EuiSuperSelect,
   EuiTitle,
+  EuiText,
 } from '@elastic/eui';
 
 import { SavedObjectAttributes } from 'src/legacy/server/saved_objects';
 import { Container } from '../../../../containers';
-import { embeddableFactories } from '../../../../embeddables';
 
 interface Props {
   onClose: () => void;
@@ -95,6 +93,40 @@ export class AddPanelFlyout extends React.Component<Props> {
     this.showToast(name);
   };
 
+  private getSelectCreateNewOptions() {
+    return [
+      {
+        value: 'createNew',
+        inputDisplay: (
+          <EuiText>
+            <FormattedMessage
+              id="kbn.embeddables.addPanel.createNewDefaultOption"
+              defaultMessage="Create new ..."
+            />
+          </EuiText>
+        ),
+      },
+
+      ...Object.values(this.props.container.embeddableFactories.getFactories())
+        .filter(factory => factory.isEditable())
+        .map(factory => ({
+          inputDisplay: (
+            <EuiText>
+              <FormattedMessage
+                id="kbn.embeddables.addPanel.createNew"
+                defaultMessage="Create new {factoryName}"
+                values={{
+                  factoryName: factory.name,
+                }}
+              />
+            </EuiText>
+          ),
+          value: factory.name,
+          'data-test-subj': `createNew-${factory.name}`,
+        })),
+    ];
+  }
+
   public render() {
     return (
       <EuiFlyout ownFocus onClose={this.props.onClose} data-test-subj="dashboardAddPanel">
@@ -109,7 +141,7 @@ export class AddPanelFlyout extends React.Component<Props> {
           <SavedObjectFinder
             onChoose={this.onAddPanel}
             savedObjectMetaData={
-              Object.values(embeddableFactories.getFactories())
+              Object.values(this.props.container.embeddableFactories.getFactories())
                 .filter(embeddableFactory => Boolean(embeddableFactory.savedObjectMetaData))
                 .map(({ savedObjectMetaData }) => savedObjectMetaData) as Array<
                 SavedObjectMetaData<SavedObjectAttributes>
@@ -126,30 +158,8 @@ export class AddPanelFlyout extends React.Component<Props> {
             <EuiFlexItem grow={true}>
               <EuiSuperSelect
                 data-test-subj="createNew"
-                options={[
-                  {
-                    inputDisplay: i18n.translate(
-                      'kbn.embeddables.addPanel.createNewDefaultOption',
-                      {
-                        defaultMessage: 'Create new ...',
-                      }
-                    ),
-                    value: '1',
-                  },
-                  ...Object.values(embeddableFactories.getFactories())
-                    .filter(factory => factory.isEditable())
-                    .map(factory => ({
-                      inputDisplay: i18n.translate('kbn.embeddables.addPanel.createNew', {
-                        defaultMessage: 'Create new {factoryName}',
-                        values: {
-                          factoryName: factory.name,
-                        },
-                      }),
-                      value: factory.name,
-                      'data-test-subj': `createNew-${factory.name}`,
-                    })),
-                ]}
-                value="1"
+                options={this.getSelectCreateNewOptions()}
+                valueOfSelected="createNew"
                 onChange={(value: string) => this.createNewEmbeddable(value)}
               />
             </EuiFlexItem>

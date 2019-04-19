@@ -68,6 +68,8 @@ interface SearchEmbeddableConfig {
   $compile: ng.ICompileService;
   courier: any;
   savedSearch: SavedSearch;
+  editUrl: string;
+  indexPatterns?: StaticIndexPattern[];
 }
 
 export interface SearchInput extends EmbeddableInput {
@@ -77,18 +79,15 @@ export interface SearchInput extends EmbeddableInput {
   hidePanelTitles?: boolean;
   columns?: string[];
   sort?: string[];
+}
+
+export interface SearchOutput extends EmbeddableOutput {
   editUrl: string;
   title: string;
   indexPatterns?: StaticIndexPattern[];
 }
 
-// export interface SearchOutput extends EmbeddableOutput {
-//   editUrl: string;
-//   title: string;
-//   indexPatterns?: StaticIndexPattern[];
-// }
-
-export class SearchEmbeddable extends Embeddable<SearchInput> {
+export class SearchEmbeddable extends Embeddable<SearchInput, SearchOutput> {
   private readonly savedSearch: SavedSearch;
   private $rootScope: ng.IRootScopeService;
   private $compile: ng.ICompileService;
@@ -101,11 +100,16 @@ export class SearchEmbeddable extends Embeddable<SearchInput> {
   private unsubscribe?: () => void;
 
   constructor(
-    { $rootScope, $compile, courier, savedSearch }: SearchEmbeddableConfig,
+    { $rootScope, $compile, courier, savedSearch, editUrl, indexPatterns }: SearchEmbeddableConfig,
     initialInput: SearchInput,
     parent?: Container
   ) {
-    super(SEARCH_EMBEDDABLE_TYPE, initialInput, {}, parent);
+    super(
+      SEARCH_EMBEDDABLE_TYPE,
+      initialInput,
+      { title: savedSearch.title, editUrl, indexPatterns },
+      parent
+    );
 
     this.courier = courier;
     this.savedSearch = savedSearch;

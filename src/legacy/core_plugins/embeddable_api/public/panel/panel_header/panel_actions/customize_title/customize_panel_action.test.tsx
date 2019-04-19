@@ -48,14 +48,13 @@ import { findTestSubject } from '@elastic/eui/lib/test';
 import { nextTick } from 'test_utils/enzyme_helpers';
 import { CustomizePanelTitleAction } from './customize_panel_action';
 
-const onClose = jest.fn();
 let container: Container;
 let embeddable: HelloWorldEmbeddable;
 
 function createHelloWorldContainer(input = { id: '123', panels: {} }) {
   const embeddableFactories = new EmbeddableFactoryRegistry();
   embeddableFactories.registerFactory(new HelloWorldEmbeddableFactory());
-  return new HelloWorldContainer({ id: '123', panels: {} }, embeddableFactories);
+  return new HelloWorldContainer(input, embeddableFactories);
 }
 
 beforeEach(async () => {
@@ -63,6 +62,7 @@ beforeEach(async () => {
   const helloEmbeddable = await container.addNewEmbeddable<HelloWorldInput, HelloWorldEmbeddable>(
     HELLO_WORLD_EMBEDDABLE,
     {
+      id: 'joe',
       firstName: 'Joe',
     }
   );

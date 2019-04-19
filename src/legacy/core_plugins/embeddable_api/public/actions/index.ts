@@ -19,5 +19,3 @@
 
 export { Action, ActionContext, ExecuteActionContext } from './action';
 export { actionRegistry } from './action_registry';
-
-export { ApplyFilterAction } from './apply_filter_action';

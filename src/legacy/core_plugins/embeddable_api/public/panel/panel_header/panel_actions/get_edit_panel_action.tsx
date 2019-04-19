@@ -22,13 +22,14 @@ import React from 'react';
 import { EuiIcon } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 
-import { ContextMenuAction, PanelActionAPI, ViewMode } from '../../..';
+import { Embeddable } from 'plugins/embeddable_api/embeddables';
+import { ContextMenuAction, ViewMode } from '../../..';
 
 export function getEditPanelAction() {
   return new ContextMenuAction(
     {
       displayName: i18n.translate('kbn.dashboard.panel.editPanel.displayName', {
-        defaultMessage: 'Edit visualization',
+        defaultMessage: 'Edit',
       }),
       id: 'editPanel',
       parentPanelId: 'mainMenu',
@@ -36,16 +37,18 @@ export function getEditPanelAction() {
     {
       priority: 9,
       icon: <EuiIcon type="pencil" />,
-      isDisabled: ({ embeddable }: PanelActionAPI) => {
+      isDisabled: ({ embeddable }: { embeddable: Embeddable }) => {
         const editUrl = embeddable.getOutput().editUrl;
         return !editUrl;
       },
-      isVisible: ({ embeddable, container }: PanelActionAPI): boolean => {
-        const canEditEmbeddable = Boolean(embeddable && embeddable.getInput().editable);
-        const inDashboardEditMode = container && container.getInput().viewMode === ViewMode.EDIT;
+      isVisible: ({ embeddable }: { embeddable: Embeddable }): boolean => {
+        const canEditEmbeddable = Boolean(
+          embeddable && embeddable.getOutput().editable && embeddable.getOutput().editUrl
+        );
+        const inDashboardEditMode = embeddable.getInput().viewMode === ViewMode.EDIT;
         return Boolean(canEditEmbeddable && inDashboardEditMode);
       },
-      getHref: ({ embeddable }: PanelActionAPI): string => {
+      getHref: ({ embeddable }: { embeddable: Embeddable }): string => {
         const editUrl = embeddable ? embeddable.getOutput().editUrl : undefined;
         return editUrl ? editUrl : '';
       },

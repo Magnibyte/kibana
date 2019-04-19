@@ -18,5 +18,6 @@
  */
 
 export { getEditPanelAction } from './get_edit_panel_action';
-export { getInspectorPanelAction } from './get_inspector_panel_action';
+export { InspectPanelAction } from './inspect_panel_action';
 export { ADD_PANEL_ACTION_ID, AddPanelAction } from './add_panel';
+export { RemovePanelAction } from './remove_panel_action';

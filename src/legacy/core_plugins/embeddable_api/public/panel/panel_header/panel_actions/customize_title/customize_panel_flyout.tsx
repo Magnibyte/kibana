@@ -19,18 +19,13 @@
 
 import React, { Component } from 'react';
 
-import { EuiFlyoutBody, EuiFlyoutHeader, EuiTitle } from '@elastic/eui';
-import { ExecuteActionContext } from 'plugins/embeddable_api/actions';
+import { EuiButton, EuiFlyoutBody, EuiFlyoutHeader, EuiTitle } from '@elastic/eui';
 import { Container, Embeddable } from '../../../../';
 import { CustomizeTitleForm } from './customize_title_form';
 
 interface CustomizePanelProps {
   embeddable: Embeddable;
-  container: Container;
-  originalTitle?: string;
-  titleOverride?: string;
-  onReset: () => void;
-  onUpdatePanelTitle: (newTitle: string) => void;
+  updateTitle: (newTitle: string | undefined) => void;
 }
 
 interface State {
@@ -41,7 +36,7 @@ export class CustomizePanelFlyout extends Component<CustomizePanelProps, State> 
   constructor(props: CustomizePanelProps) {
     super(props);
     this.state = {
-      title: props.container.getInputForEmbeddable(props.embeddable.id).title,
+      title: props.embeddable.getTitle(),
     };
   }
 
@@ -50,7 +45,7 @@ export class CustomizePanelFlyout extends Component<CustomizePanelProps, State> 
   };
 
   reset = () => {
-    this.onUpdatePanelTitle({ title: undefined });
+    this.props.updateTitle(undefined);
   };
 
   public render() {
@@ -58,15 +53,18 @@ export class CustomizePanelFlyout extends Component<CustomizePanelProps, State> 
       <React.Fragment>
         <EuiFlyoutHeader>
           <EuiTitle size="s" data-test-subj="customizePanelTitle">
-            <h1>{this.props.titleOverride || this.props.originalTitle}</h1>
+            <h1>{this.props.embeddable.getTitle()}</h1>
           </EuiTitle>
         </EuiFlyoutHeader>
         <EuiFlyoutBody>
           <CustomizeTitleForm
             title={this.state.title || this.props.embeddable.getTitle()}
             onReset={this.reset}
-            onUpdatePanelTitle={this.props.onUpdatePanelTitle}
+            onUpdatePanelTitle={this.updateTitle}
           />
+          <EuiButton onClick={() => this.props.updateTitle(this.state.title)}>
+            Save & Close
+          </EuiButton>
         </EuiFlyoutBody>
       </React.Fragment>
     );

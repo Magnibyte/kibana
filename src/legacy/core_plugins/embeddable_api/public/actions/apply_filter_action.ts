@@ -46,11 +46,6 @@ export class ApplyFilterAction extends Action<
 > {
   constructor() {
     super(APPLY_FILTER_ACTION_ID);
-
-    this.description =
-      'This action uses advanced internal knowledge of our embeddables and our filter shape to apply a filter to a' +
-      ' container that comes from the APPLY_FILTER_TRIGGER. Functionally, this should implement the same flow Kibana users are' +
-      ' used to when they click on a magnifying glass in a saved search, or a pie slice on a visualization, for example.';
   }
 
   public getTitle() {
@@ -76,19 +71,19 @@ export class ApplyFilterAction extends Action<
     if (!triggerContext) {
       throw new Error('Applying a filter requires a filter as context');
     }
-
     let root = embeddable;
     while (root.parent) {
       root = root.parent;
     }
-
     (root as Container<{ id: string }, {}, ApplyFilterContainerInput>).updateInput({
       filters: triggerContext.filters,
     });
   }
 }
-
-actionRegistry.addAction(new ApplyFilterAction());
+const applyFilterAction = new ApplyFilterAction();
+if (!actionRegistry.getAction(applyFilterAction.id)) {
+  actionRegistry.addAction(new ApplyFilterAction());
+}
 
 triggerRegistry.attachAction({
   triggerId: APPLY_FILTER_TRIGGER,

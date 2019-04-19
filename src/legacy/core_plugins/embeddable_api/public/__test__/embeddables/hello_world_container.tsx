@@ -24,18 +24,24 @@ import { ViewMode } from 'plugins/embeddable_api/types';
 import { PanelState, ContainerInput } from 'plugins/embeddable_api/containers';
 import { HelloWorldContainerComponent } from './hello_world_container_component';
 
-export const LIST_CONTAINER_ID = 'LIST_CONTAINER_ID';
+export const HELLO_WORLD_CONTAINER = 'HELLO_WORLD_CONTAINER';
 
-export class HelloWorldContainer extends Container {
+interface InheritedInput {
+  id: string;
+  viewMode: ViewMode;
+  lastName: string;
+}
+
+export class HelloWorldContainer extends Container<InheritedInput> {
   constructor(input: ContainerInput, embeddableFactories: EmbeddableFactoryRegistry) {
-    // Seed the list with one embeddable to ensure it works.
-    super(LIST_CONTAINER_ID, input, { embeddableLoaded: { myid: false } }, embeddableFactories);
+    super(HELLO_WORLD_CONTAINER, input, { embeddableLoaded: {} }, embeddableFactories);
   }
 
   public getInheritedInput(id: string) {
     return {
       id,
       viewMode: this.input.viewMode || ViewMode.EDIT,
+      lastName: 'foo',
     };
   }
 

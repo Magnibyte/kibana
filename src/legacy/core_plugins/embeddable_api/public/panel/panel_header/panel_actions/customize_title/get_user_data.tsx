@@ -25,10 +25,8 @@ export async function getUserData(context: ExecuteActionContext) {
   return new Promise<{ title: string | undefined }>(resolve => {
     getNewPlatform().setup.core.overlays.openFlyout(
       <CustomizePanelFlyout
-        container={context.container}
         embeddable={context.embeddable}
-        onReset={() => resolve({ title: undefined })}
-        onUpdatePanelTitle={title => resolve({ title })}
+        updateTitle={title => resolve({ title })}
       />,
       {
         'data-test-subj': 'samplePanelActionFlyout',

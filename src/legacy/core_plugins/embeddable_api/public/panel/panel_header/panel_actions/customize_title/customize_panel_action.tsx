@@ -27,21 +27,18 @@ import { getUserData } from './get_user_data';
 
 const CUSTOMIZE_PANEL_ACTION_ID = 'CUSTOMIZE_PANEL_ACTION_ID';
 
-export class CustomizePanelTitleAction extends Action<
-  Embeddable,
-  Container,
-  {},
-  {
-    title: string | undefined;
-  }
-> {
+export class CustomizePanelTitleAction extends Action<Embeddable, Container, {}> {
+  private getDataFromUser: (
+    context: ExecuteActionContext
+  ) => Promise<{ title: string | undefined }>;
   constructor(
-    protected getDataFromUser: (
+    getDataFromUser: (
       context: ExecuteActionContext
     ) => Promise<{ title: string | undefined }> = getUserData
   ) {
     super(CUSTOMIZE_PANEL_ACTION_ID);
     this.priority = 8;
+    this.getDataFromUser = getDataFromUser;
   }
 
   public getTitle() {
@@ -54,26 +51,14 @@ export class CustomizePanelTitleAction extends Action<
     return <EuiIcon type="pencil" />;
   }
 
-  public isCompatible({
-    embeddable,
-    container,
-  }: {
-    embeddable: Embeddable;
-    container?: Container;
-  }) {
+  public isCompatible({ embeddable }: { embeddable: Embeddable }) {
     return Promise.resolve(
-      container && container.getInput().viewMode === ViewMode.EDIT ? true : false
+      embeddable && embeddable.getInput().viewMode === ViewMode.EDIT ? true : false
     );
   }
 
-  public async execute({ embeddable, container }: ExecuteActionContext) {
-    if (!embeddable || !container) {
-      throw new Error(
-        'Customize panel title action requires an embeddable and container as context.'
-      );
-    }
-
-    const customTitle = await this.getDataFromUser({ embeddable, container });
+  public async execute({ embeddable }: ExecuteActionContext) {
+    const customTitle = await this.getDataFromUser({ embeddable });
     embeddable.updateInput(customTitle);
   }
 }

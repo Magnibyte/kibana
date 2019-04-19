@@ -24,33 +24,21 @@ jest.mock('ui/metadata', () => ({
   },
 }));
 
-import {
-  HELLO_WORLD_EMBEDDABLE,
-  HelloWorldEmbeddableFactory,
-  HelloWorldContainer,
-  SayHelloAction,
-  EmptyEmbeddable,
-  HelloWorldEmbeddable,
-  HelloWorldInput,
-} from '../__test__/index';
-import { EmbeddableFactoryRegistry, isErrorEmbeddable } from '../embeddables';
-import { PanelState } from '../containers';
+import { HelloWorldAction, SayHelloAction, EmptyEmbeddable } from '../__test__/index';
 
-function createHelloWorldContainer(panels: { [key: string]: PanelState }) {
-  const embeddableFactories = new EmbeddableFactoryRegistry();
-  embeddableFactories.registerFactory(new HelloWorldEmbeddableFactory());
-  return new HelloWorldContainer(panels, embeddableFactories);
-}
-
-test('SayHelloAction is not compatible with not matching embeddables', async done => {
+test('SayHelloAction is not compatible with not matching embeddables', async () => {
   const sayHelloAction = new SayHelloAction(() => {});
   const emptyEmbeddable = new EmptyEmbeddable({ id: '234' });
 
   // @ts-ignore Typescript is nice and tells us ahead of time this is invalid, but
   // I want to make sure it also returns false.
-  expect(sayHelloAction.isCompatible(emptyEmbeddable)).toBe(false);
+  const isCompatible = await sayHelloAction.isCompatible({ embeddable: emptyEmbeddable });
+  expect(isCompatible).toBe(false);
 });
 
-test('Action can be stored as saved object', async () => {
-  
+test('HelloWorldAction inherits isCompatible from base action', async () => {
+  const helloWorldAction = new HelloWorldAction();
+  const emptyEmbeddable = new EmptyEmbeddable({ id: '234' });
+  const isCompatible = await helloWorldAction.isCompatible({ embeddable: emptyEmbeddable });
+  expect(isCompatible).toBe(true);
 });

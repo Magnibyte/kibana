@@ -4,10 +4,17 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
 <DashboardPanelUi
   container={
     DashboardContainer {
-      "anyChangeListeners": Array [],
-      "container": undefined,
+      "anyChangeListeners": Array [
+        [Function],
+        [Function],
+      ],
+      "destoyed": false,
       "embeddableFactories": EmbeddableFactoryRegistry {
         "factories": Object {
+          "FILTERABLE_EMBEDDABLE": FilterableEmbeddableFactory {
+            "name": "FILTERABLE_EMBEDDABLE",
+            "savedObjectMetaData": undefined,
+          },
           "dashboard": DashboardContainerFactory {
             "name": "dashboard",
             "savedObjectMetaData": undefined,
@@ -18,19 +25,45 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
           },
         },
       },
-      "embeddableUnsubscribes": Object {
-        "739ca72c-f593-4d87-8a06-1daa12620bf9": [Function],
-      },
       "embeddables": Object {
-        "739ca72c-f593-4d87-8a06-1daa12620bf9": HelloWorldEmbeddable {
+        "123": HelloWorldEmbeddable {
           "anyChangeListeners": Array [],
-          "container": [Circular],
-          "id": "739ca72c-f593-4d87-8a06-1daa12620bf9",
-          "input": Object {},
-          "inputChangeListeners": Array [],
+          "destoyed": false,
+          "id": "123",
+          "input": Object {
+            "filters": Array [],
+            "firstName": "Sue",
+            "hidePanelTitles": undefined,
+            "id": "123",
+            "query": Object {
+              "language": "kuery",
+              "query": "",
+            },
+            "refreshConfig": undefined,
+            "timeRange": Object {
+              "from": "now-15m",
+              "to": "now",
+            },
+            "viewMode": "edit",
+          },
+          "inputChangeListeners": Array [
+            [Function],
+          ],
           "isContainer": false,
+          "node": <div
+            class="embeddable-root panel-content"
+          >
+            <div>
+              Hello World!
+              <br />
+               Sincerly, $
+              
+            </div>
+          </div>,
           "output": Object {
-            "title": "Hello World!",
+            "birthLastName": undefined,
+            "birthName": "Sue",
+            "name": "Sue",
           },
           "outputChangeListeners": Array [
             [Function],
@@ -44,20 +77,17 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
               data-test-subj="embeddablePanel"
             >
               <div
-                class="embPanel__header"
-                data-test-subj="dashboardPanelHeading-HelloWorld!"
+                class="embPanel__header embPanel__header--floater"
+                data-test-subj="dashboardPanelHeading-"
               >
                 <div
-                  aria-label="Dashboard panel: Hello World!"
+                  aria-label="Dashboard panel: "
                   class="embPanel__title embPanel__dragger"
                   data-test-subj="dashboardPanelTitle"
-                  title="Hello World!"
-                >
-                  Hello World!
-                </div>
+                />
                 <div
                   class="euiPopover euiPopover--anchorDownRight euiPopover--withTitle embPanel_optionsMenuPopover"
-                  data-test-subj="dashboardPanelContextMenuClosed"
+                  data-test-subj="embeddablePanelContextMenuClosed"
                   id="dashboardPanelContextMenu"
                 >
                   <div
@@ -66,7 +96,7 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
                     <button
                       aria-label="Panel options"
                       class="euiButtonIcon euiButtonIcon--text embPanel_optionsMenuButton"
-                      data-test-subj="dashboardPanelToggleMenuIcon"
+                      data-test-subj="embeddablePanelToggleMenuIcon"
                       type="button"
                     >
                       <svg
@@ -98,28 +128,38 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
               >
                 <div>
                   Hello World!
+                  <br />
+                   Sincerly, $
+                  
                 </div>
               </div>
             </div>
           </div>,
+          "parent": [Circular],
+          "parentChangesUnsubscribe": [Function],
           "type": "hello_world",
+          "unsubscribe": [Function],
         },
       },
-      "id": "f38730d4-e122-4544-b68b-9d8cf6316dd5",
+      "id": "123",
       "input": Object {
         "filters": Array [],
+        "id": "123",
         "isFullScreenMode": false,
         "panels": Object {
-          "739ca72c-f593-4d87-8a06-1daa12620bf9": Object {
-            "embeddableId": "739ca72c-f593-4d87-8a06-1daa12620bf9",
+          "123": Object {
+            "embeddableId": "123",
             "gridData": Object {
               "h": 15,
-              "i": "739ca72c-f593-4d87-8a06-1daa12620bf9",
+              "i": "123",
               "w": 24,
               "x": 0,
               "y": 0,
             },
-            "partialInput": Object {},
+            "partialInput": Object {
+              "firstName": "Sue",
+              "id": "123",
+            },
             "type": "hello_world",
           },
         },
@@ -141,32 +181,19 @@ exports[`DashboardPanel renders an embeddable when it is done loading 1`] = `
       "onPanelsUpdated": [Function],
       "output": Object {
         "embeddableLoaded": Object {
-          "739ca72c-f593-4d87-8a06-1daa12620bf9": true,
+          "123": true,
         },
-        "filters": Array [],
-        "isFullScreenMode": false,
-        "panels": Object {},
-        "query": Object {
-          "language": "kuery",
-          "query": "",
-        },
-        "timeRange": Object {
-          "from": "now-15m",
-          "to": "now",
-        },
-        "title": "My Test Dashboard",
-        "useMargins": false,
-        "viewMode": "edit",
       },
       "outputChangeListeners": Array [
         [Function],
-        [Function],
       ],
       "panelContainer": undefined,
+      "parent": undefined,
+      "parentChangesUnsubscribe": undefined,
       "type": "dashboard",
     }
   }
-  embeddableId="739ca72c-f593-4d87-8a06-1daa12620bf9"
+  embeddableId="123"
   intl={
     Object {
       "defaultFormats": Object {},

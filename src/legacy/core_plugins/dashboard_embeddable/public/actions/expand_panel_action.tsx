@@ -26,38 +26,28 @@ import {
   CONTEXT_MENU_TRIGGER,
   triggerRegistry,
   ViewMode,
-  PanelActionAPI,
 } from 'plugins/embeddable_api/index';
 import React from 'react';
 import { DASHBOARD_CONTAINER_TYPE, DashboardContainer } from '../embeddable';
 
 export const EXPAND_PANEL_ACTION = 'EXPAND_PANEL_ACTION';
 
+function isDashboard(embeddable: Embeddable): embeddable is DashboardContainer {
+  return (embeddable as DashboardContainer).type === DASHBOARD_CONTAINER_TYPE;
+}
+
 export class ExpandPanelAction extends Action {
   constructor() {
-    super({
-      type: 'EXPAND_PANEL_ACTION',
-    });
-
-    this.title = 'Expand panel';
-    this.id = EXPAND_PANEL_ACTION;
+    super('EXPAND_PANEL_ACTION');
     this.priority = 7;
   }
 
-  public isSingleton() {
-    return true;
-  }
+  public getTitle({ embeddable }: { embeddable: Embeddable }) {
+    if (!embeddable.parent || !isDashboard(embeddable.parent)) {
+      throw new Error('Action is incompatible with context');
+    }
 
-  public allowEditing() {
-    return false;
-  }
-
-  public allowDynamicTriggerMapping() {
-    return false;
-  }
-
-  public getTitle({ embeddable, container }: PanelActionAPI<Embeddable, DashboardContainer>) {
-    return container.getInput().expandedPanelId
+    return embeddable.parent.getInput().expandedPanelId
       ? i18n.translate('kbn.embeddable.actions.toggleExpandPanel.expandedDisplayName', {
           defaultMessage: 'Minimize',
         })
@@ -66,49 +56,33 @@ export class ExpandPanelAction extends Action {
         });
   }
 
-  public getIcon({
-    embeddable,
-    container,
-  }: {
-    embeddable: Embeddable;
-    container: DashboardContainer;
-  }) {
-    const isExpanded = container.getInput().expandedPanelId === embeddable.id;
+  public getIcon({ embeddable }: { embeddable: Embeddable }) {
+    if (!embeddable.parent || !isDashboard(embeddable.parent)) {
+      throw new Error('Action is incompatible with context');
+    }
+    const isExpanded = embeddable.parent.getInput().expandedPanelId === embeddable.id;
     return <EuiIcon type={isExpanded ? 'expand' : 'expand'} />;
   }
 
-  public isCompatible({
-    embeddable,
-    container,
-  }: {
-    embeddable: Embeddable;
-    container: DashboardContainer;
-  }) {
+  public isCompatible({ embeddable }: { embeddable: Embeddable }) {
     return Promise.resolve(
-      container &&
-        container.type === DASHBOARD_CONTAINER_TYPE &&
-        embeddable &&
-        embeddable.getInput().viewMode === ViewMode.VIEW
+      Boolean(
+        embeddable.parent &&
+          isDashboard(embeddable.parent) &&
+          embeddable.getInput().viewMode === ViewMode.VIEW
+      )
     );
   }
 
-  public execute({
-    embeddable,
-    container,
-  }: {
-    embeddable: Embeddable;
-    container: DashboardContainer;
-  }) {
-    container.onToggleExpandPanel(embeddable.id);
+  public execute({ embeddable }: { embeddable: Embeddable }) {
+    if (!embeddable.parent || !isDashboard(embeddable.parent)) {
+      throw new Error('Action is incompatible with context');
+    }
+    embeddable.parent.onToggleExpandPanel(embeddable.id);
   }
 }
 
 actionRegistry.addAction(new ExpandPanelAction());
-
-triggerRegistry.attachAction({
-  triggerId: CONTEXT_MENU_TRIGGER,
-  actionId: EXPAND_PANEL_ACTION,
-});
 
 triggerRegistry.attachAction({
   triggerId: CONTEXT_MENU_TRIGGER,

@@ -29,8 +29,14 @@ interface SayHelloEmbeddableOutput extends EmbeddableOutput {
 type SayHelloEmbeddable = Embeddable<EmbeddableInput, SayHelloEmbeddableOutput>;
 
 export class SayHelloAction extends Action {
-  constructor(private sayHello: (name: string) => void) {
-    super({ type: SAY_HELLO_ACTION });
+  private sayHello: (name: string) => void;
+  constructor(sayHello: (name: string) => void) {
+    super(SAY_HELLO_ACTION);
+    this.sayHello = sayHello;
+  }
+
+  getTitle() {
+    return 'Say hello';
   }
 
   isCompatible(context: ActionContext<SayHelloEmbeddable>) {

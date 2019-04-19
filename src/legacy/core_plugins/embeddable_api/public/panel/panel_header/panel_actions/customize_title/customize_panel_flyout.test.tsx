@@ -46,7 +46,7 @@ import { Container } from 'plugins/embeddable_api/containers';
 import { EmbeddableFactoryRegistry, isErrorEmbeddable } from 'plugins/embeddable_api/embeddables';
 // @ts-ignore
 import { findTestSubject } from '@elastic/eui/lib/test';
-import { mountWithIntl } from 'test_utils/enzyme_helpers';
+import { shallowWithIntl } from 'test_utils/enzyme_helpers';
 
 const onClose = jest.fn();
 let container: Container;
@@ -70,24 +70,9 @@ beforeEach(async () => {
 });
 
 test('matches snapshot', async () => {
-  const component = mountWithIntl(<CustomizePanelFlyout container={container} onClose={onClose} />);
-
-  expect(component).toMatchSnapshot();
-});
-
-test('changes the new title with container', async done => {
-  const component = mountWithIntl(
-    <CustomizePanelFlyout container={container} embeddable={embeddable} onClose={onClose} />
+  const component = shallowWithIntl(
+    <CustomizePanelFlyout embeddable={embeddable} updateTitle={() => {}} />
   );
 
-  expect(Object.values(container.getInput().panels).length).toBe(0);
-
-  const unsubscribe = container.subscribeToInputChanges(input => {
-    expect(Object.values(input.panels).length).toBe(1);
-    unsubscribe();
-    done();
-  });
-
-  findTestSubject(component, 'createNew').simulate('click');
-  findTestSubject(component, `createNew-${HELLO_WORLD_EMBEDDABLE}`).simulate('click');
+  expect(component).toMatchSnapshot();
 });

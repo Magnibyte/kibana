@@ -23,6 +23,7 @@ import React from 'react';
 
 import { getNewPlatform } from 'ui/new_platform';
 import { i18n } from '@kbn/i18n';
+import { tokenToString } from 'typescript';
 import { FlyoutRef } from '../../../../../../../../core/public';
 import { Action, Container, Embeddable } from '../../../../';
 import { AddPanelFlyout } from './add_panel_flyout';
@@ -46,16 +47,17 @@ export class AddPanelAction extends Action {
     return <EuiIcon type="plusInCircleFilled" />;
   }
 
-  public isCompatible({ embeddable }: { embeddable: Embeddable; container?: Container }) {
+  public isCompatible({ embeddable }: { embeddable: Embeddable }) {
     return Promise.resolve(
       embeddable.isContainer && (embeddable as Container).getViewMode() === ViewMode.EDIT
     );
   }
 
-  public execute({ embeddable, container }: { embeddable: Container; container?: Container }) {
-    if (!embeddable) {
-      throw new Error('Customize panel title action requires an embeddable as context.');
+  public async execute({ embeddable }: { embeddable: Container }) {
+    if (!(await this.isCompatible({ embeddable }))) {
+      throw new Error('Context is incompatible');
     }
+
     this.flyoutSession = getNewPlatform().setup.core.overlays.openFlyout(
       <AddPanelFlyout
         container={embeddable}

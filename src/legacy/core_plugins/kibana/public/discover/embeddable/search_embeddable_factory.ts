@@ -114,14 +114,12 @@ export class SearchEmbeddableFactory extends EmbeddableFactory<
             savedSearch: savedObject,
             $rootScope,
             $compile,
-          },
-          {
             editUrl,
             editable: uiCapabilities.discover.save as boolean,
             title: savedObject.title,
             indexPatterns: _.compact([savedObject.searchSource.getField('index')]),
-            ...input,
           },
+          input,
           parent
         );
       })

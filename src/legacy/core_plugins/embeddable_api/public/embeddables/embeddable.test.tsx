@@ -30,7 +30,7 @@ test('Embeddable calls input subscribers when changed', async done => {
   const hello = new HelloWorldEmbeddable({ id: '123', firstName: 'Sue' });
 
   const unsubscribe = hello.subscribeToInputChanges(changes => {
-    expect(changes).toEqual({ title: 'Dr.' });
+    expect(changes).toEqual({ nameTitle: 'Dr.' });
     done();
     unsubscribe();
   });

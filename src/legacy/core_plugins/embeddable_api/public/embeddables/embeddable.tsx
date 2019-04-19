@@ -32,12 +32,12 @@ export interface EmbeddableInput {
   title?: string;
   id: string;
   savedObjectId?: string;
-  editable?: boolean;
 }
 
 export interface EmbeddableOutput {
   editUrl?: string;
   title?: string;
+  editable?: boolean;
 }
 
 export class Embeddable<
@@ -66,6 +66,10 @@ export class Embeddable<
     this.input = input;
     this.parent = parent;
 
+    if (!input.id) {
+      throw new Error('Id required');
+    }
+
     if (parent) {
       this.parentChangesUnsubscribe = parent.subscribeToChanges(() => {
         const newInput = parent.getInputForEmbeddable<I>(this.id);
@@ -75,7 +79,7 @@ export class Embeddable<
   }
 
   public getTitle() {
-    return this.input.title;
+    return this.input.title || this.output.title;
   }
 
   private onParentInputChanged(newInput: I) {

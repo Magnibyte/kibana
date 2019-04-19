@@ -64,20 +64,25 @@ export interface DashboardContainerInput extends ContainerInput {
   lastReloadRequestTime?: number;
 }
 
-export interface DashboardEmbeddableInput extends EmbeddableInput {
+export interface DashboardEmbeddableInput {
   filters: Filter[];
   query: Query;
   timeRange: TimeRange;
   refreshConfig?: RefreshConfig;
   viewMode: ViewMode;
   hidePanelTitles?: boolean;
+  id: string;
+  firstName: string;
 }
 
 export interface DashboardEmbeddableOutput extends EmbeddableOutput {
   indexPatterns?: IndexPattern[];
 }
 
-export type DashboardEmbeddable = Embeddable<DashboardEmbeddableInput, DashboardEmbeddableOutput>;
+export type DashboardEmbeddable = Embeddable<
+  DashboardEmbeddableInput & EmbeddableInput,
+  DashboardEmbeddableOutput
+>;
 
 export class DashboardContainer extends Container<
   DashboardEmbeddableInput,
@@ -105,9 +110,12 @@ export class DashboardContainer extends Container<
   }
 
   protected createNewPanelState<EEI extends EmbeddableInput = EmbeddableInput>(
-    factory: EmbeddableFactory<EEI>
+    factory: EmbeddableFactory<EEI>,
+    partial: Partial<EmbeddableInputMissingFromContainer<EEI, DashboardEmbeddableInput>> & {
+      id?: string;
+    } = {}
   ): DashboardPanelState<EmbeddableInputMissingFromContainer<EEI, DashboardEmbeddableInput>> {
-    const panelState = super.createNewPanelState(factory);
+    const panelState = super.createNewPanelState(factory, partial);
     return createPanelState<EmbeddableInputMissingFromContainer<EEI, DashboardEmbeddableInput>>(
       panelState,
       Object.values(this.input.panels)
@@ -168,6 +176,7 @@ export class DashboardContainer extends Container<
       refreshConfig,
       viewMode,
       id,
+      firstName: 'suuuue',
     };
   }
 }

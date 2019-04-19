@@ -16,27 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { Adapters } from 'ui/inspector';
+import { Container } from '../../containers';
+import { EmbeddableOutput, EmbeddableInput, Embeddable } from '../../embeddables';
+import { Filter } from '../../types';
 
-import { EmbeddableFactory } from './embeddable_factory';
+export const FILTERABLE_EMBEDDABLE = 'FILTERABLE_EMBEDDABLE';
 
-export class EmbeddableFactoryRegistry {
-  private factories: { [key: string]: EmbeddableFactory } = {};
-
-  public registerFactory(factory: EmbeddableFactory) {
-    this.factories[factory.name] = factory;
-  }
-
-  public getFactoryByName<E extends EmbeddableFactory = EmbeddableFactory>(name: string): E {
-    return this.factories[name] as E;
-  }
-
-  public getFactories() {
-    return this.factories;
-  }
-
-  public reset() {
-    this.factories = {};
-  }
+export interface FilterableEmbeddableInput extends EmbeddableInput {
+  filters: Filter[];
 }
 
-export const embeddableFactories = new EmbeddableFactoryRegistry();
+export class FilterableEmbeddable extends Embeddable<FilterableEmbeddableInput, EmbeddableOutput> {
+  constructor(initialInput: FilterableEmbeddableInput, parent?: Container) {
+    super(FILTERABLE_EMBEDDABLE, initialInput, {}, parent);
+  }
+
+  public getInspectorAdapters() {
+    const inspectorAdapters: Adapters = {
+      filters: `My filters are ${JSON.stringify(this.input.filters)}`,
+    };
+    return inspectorAdapters;
+  }
+
+  public render() {}
+}

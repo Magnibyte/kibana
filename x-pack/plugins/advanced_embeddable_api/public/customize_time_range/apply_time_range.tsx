@@ -22,6 +22,12 @@ interface TimeRangeEmbeddableInput extends EmbeddableInput {
   timeRange?: TimeRange;
 }
 
+function embeddableAcceptsTimeRange(
+  embeddable: Embeddable | Embeddable<TimeRangeEmbeddableInput>
+): embeddable is Embeddable<TimeRangeEmbeddableInput> {
+  return (embeddable as Embeddable<TimeRangeEmbeddableInput>).getInput().timeRange !== undefined;
+}
+
 export class ApplyTimeRangeAction extends DynamicAction {
   public timeRange?: TimeRange;
 
@@ -40,6 +46,10 @@ export class ApplyTimeRangeAction extends DynamicAction {
     return JSON.stringify(this.timeRange);
   }
 
+  public isCompatible({ embeddable }: { embeddable: Embeddable }) {
+    return Promise.resolve(embeddableAcceptsTimeRange(embeddable));
+  }
+
   public getTitle() {
     if (!this.timeRange) return 'Inherit from dashboard';
     if (this.timeRange.from === 'now/y' && this.timeRange.to === 'now/y') {
@@ -54,13 +64,21 @@ export class ApplyTimeRangeAction extends DynamicAction {
     return `${this.timeRange.from} to ${this.timeRange.to}`;
   }
 
-  public getIcon({ embeddable, container }: { embeddable: Embeddable; container: Container }) {
-    const input = container.getExplicitEmbeddableInput(embeddable.id);
-    if (!this.timeRange && input.timeRange === undefined) {
+  public getIcon({ embeddable }: { embeddable: Embeddable; container: Container }) {
+    if (!embeddableAcceptsTimeRange(embeddable)) {
+      throw new Error('Action is not compatible');
+    }
+
+    const timeRange = embeddable.getInput().timeRange;
+    const explicitTimeRange = embeddable.parent
+      ? embeddable.parent.getExplicitEmbeddableInput(embeddable.id)
+      : undefined;
+
+    if (!this.timeRange && explicitTimeRange === undefined) {
       return <EuiIcon type="check" />;
     }
 
-    if (input.timeRange && _.isEqual(this.timeRange, input.timeRange)) {
+    if (this.timeRange && _.isEqual(this.timeRange, timeRange)) {
       return <EuiIcon type="check" />;
     }
 
@@ -71,11 +89,11 @@ export class ApplyTimeRangeAction extends DynamicAction {
     return false;
   }
 
-  public execute({ embeddable, container }: { embeddable: Embeddable; container: Container }) {
-    if (!embeddable || !container) {
-      return;
+  public execute({ embeddable }: { embeddable: Embeddable }) {
+    if (!embeddableAcceptsTimeRange(embeddable)) {
+      throw new Error('Action is not compatible');
     }
-    container.updateEmbeddableInput<TimeRangeEmbeddableInput>(embeddable.id, {
+    embeddable.updateInput({
       timeRange: this.timeRange,
     });
   }

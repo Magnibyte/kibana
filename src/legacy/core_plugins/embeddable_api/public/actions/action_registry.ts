@@ -25,11 +25,10 @@ import { triggerRegistry } from '../triggers';
 class ActionRegistry {
   private actions: { [key: string]: Action } = {};
 
-  public addAction<
-    E extends Embeddable = Embeddable,
-    C extends Container = Container,
-    T extends {} = {}
-  >(action: Action<E, C, T>) {
+  public addAction(action: Action) {
+    if (this.getAction(action.id)) {
+      throw new Error('Action already exists');
+    }
     this.actions[action.id] = action;
   }
 
@@ -43,6 +42,10 @@ class ActionRegistry {
 
   public getActions() {
     return this.actions;
+  }
+
+  public reset() {
+    this.actions = {};
   }
 
   public async getActionsForTrigger(

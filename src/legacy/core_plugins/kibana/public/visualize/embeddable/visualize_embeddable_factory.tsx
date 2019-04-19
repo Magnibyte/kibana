@@ -275,14 +275,12 @@ export class VisualizeEmbeddableFactory extends EmbeddableFactory<
       return new VisualizeEmbeddable(
         {
           savedVisualization: savedObject,
-          editUrl,
           loader,
           indexPatterns,
-        },
-        {
-          ...input,
+          editUrl,
           editable: this.isEditable(),
         },
+        input,
         parent
       );
     } catch (e) {

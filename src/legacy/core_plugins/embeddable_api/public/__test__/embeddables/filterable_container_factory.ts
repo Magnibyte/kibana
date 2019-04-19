@@ -17,10 +17,28 @@
  * under the License.
  */
 
-import { Action } from './action';
+import { embeddableFactories, EmbeddableFactory } from 'plugins/embeddable_api/index';
+import { Container } from 'plugins/embeddable_api/containers';
+import {
+  FilterableContainer,
+  FilterableContainerInput,
+  FILTERABLE_CONTAINER,
+} from './filterable_container';
 
-export function isAction(
-  action: Action | { message: string; statusCode?: number }
-): action is Action {
-  return (action as Action).execute === undefined;
+export class FilterableContainerFactory extends EmbeddableFactory<FilterableContainerInput> {
+  constructor() {
+    super({
+      name: FILTERABLE_CONTAINER,
+    });
+  }
+
+  public getOutputSpec() {
+    return {};
+  }
+
+  public create(initialInput: FilterableContainerInput, parent?: Container) {
+    return Promise.resolve(new FilterableContainer(initialInput, embeddableFactories, parent));
+  }
 }
+
+embeddableFactories.registerFactory(new FilterableContainerFactory());

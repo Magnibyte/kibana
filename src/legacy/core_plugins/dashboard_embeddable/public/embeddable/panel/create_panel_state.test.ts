@@ -16,41 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { QueryLanguageType, ViewMode } from 'plugins/embeddable_api/types';
+jest.mock('ui/metadata', () => ({
+  metadata: {
+    branch: 'my-metadata-branch',
+    version: 'my-metadata-version',
+  },
+}));
+
 import { DEFAULT_PANEL_HEIGHT, DEFAULT_PANEL_WIDTH } from '../dashboard_constants';
-import { DashboardEmbeddableInput } from '../dashboard_container';
 import { DashboardPanelState } from '../types';
 import { createPanelState } from './create_panel_state';
+import { HELLO_WORLD_EMBEDDABLE } from 'plugins/embeddable_api/__test__';
 
-interface TestInput extends DashboardEmbeddableInput {
+interface TestInput {
   test: string;
 }
-
-function getSampleDashboardEmbeddableInput(): DashboardEmbeddableInput {
-  return {
-    filters: [],
-    query: {
-      language: QueryLanguageType.KUERY,
-      query: 'hi',
-    },
-    timeRange: {
-      to: 'now',
-      from: 'now-15m',
-    },
-    viewMode: ViewMode.VIEW,
-  };
-}
-
 const panels: DashboardPanelState[] = [];
 
 test('createPanelState adds a new panel state in 0,0 position', () => {
   const panelState = createPanelState<TestInput>(
-    { test: 'hi', ...getSampleDashboardEmbeddableInput() },
-    'bye',
+    { embeddableId: '123', type: HELLO_WORLD_EMBEDDABLE, partialInput: { test: 'hi' } },
     []
   );
   expect(panelState.partialInput.test).toBe('hi');
-  expect(panelState.type).toBe('bye');
+  expect(panelState.type).toBe(HELLO_WORLD_EMBEDDABLE);
   expect(panelState.embeddableId).toBeDefined();
   expect(panelState.gridData.x).toBe(0);
   expect(panelState.gridData.y).toBe(0);
@@ -61,7 +50,10 @@ test('createPanelState adds a new panel state in 0,0 position', () => {
 });
 
 test('createPanelState adds a second new panel state', () => {
-  const panelState = createPanelState(getSampleDashboardEmbeddableInput(), '123', panels);
+  const panelState = createPanelState(
+    { embeddableId: '456', type: HELLO_WORLD_EMBEDDABLE, partialInput: { test: 'bye' } },
+    panels
+  );
   expect(panelState.gridData.x).toBe(DEFAULT_PANEL_WIDTH);
   expect(panelState.gridData.y).toBe(0);
   expect(panelState.gridData.h).toBe(DEFAULT_PANEL_HEIGHT);
@@ -71,7 +63,10 @@ test('createPanelState adds a second new panel state', () => {
 });
 
 test('createPanelState adds a third new panel state', () => {
-  const panelState = createPanelState(getSampleDashboardEmbeddableInput(), '456', panels);
+  const panelState = createPanelState(
+    { embeddableId: '789', type: HELLO_WORLD_EMBEDDABLE, partialInput: { test: 'bye' } },
+    panels
+  );
   expect(panelState.gridData.x).toBe(0);
   expect(panelState.gridData.y).toBe(DEFAULT_PANEL_HEIGHT);
   expect(panelState.gridData.h).toBe(DEFAULT_PANEL_HEIGHT);
@@ -83,8 +78,7 @@ test('createPanelState adds a third new panel state', () => {
 test('createPanelState adds a new panel state in the top most position', () => {
   const panelsWithEmptySpace = panels.filter(panel => panel.gridData.x === 0);
   const panelState = createPanelState(
-    getSampleDashboardEmbeddableInput(),
-    '789',
+    { embeddableId: '987', type: HELLO_WORLD_EMBEDDABLE, partialInput: { test: 'bye' } },
     panelsWithEmptySpace
   );
   expect(panelState.gridData.x).toBe(DEFAULT_PANEL_WIDTH);

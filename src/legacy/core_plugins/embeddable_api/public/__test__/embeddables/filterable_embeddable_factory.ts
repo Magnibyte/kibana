@@ -17,32 +17,28 @@
  * under the License.
  */
 
-import { ViewMode } from 'plugins/embeddable_api/types';
-import { Action, ActionContext } from '../../actions';
+import { embeddableFactories, EmbeddableFactory } from 'plugins/embeddable_api/index';
+import { Container } from 'plugins/embeddable_api/containers';
+import {
+  FilterableEmbeddable,
+  FilterableEmbeddableInput,
+  FILTERABLE_EMBEDDABLE,
+} from './filterable_embeddable';
 
-export const CHANGE_CONTAINER_VIEW_MODE = 'CHANGE_CONTAINER_VIEW_MODE';
-
-export class ChangeViewModeAction extends Action {
+export class FilterableEmbeddableFactory extends EmbeddableFactory<FilterableEmbeddableInput> {
   constructor() {
-    super(CHANGE_CONTAINER_VIEW_MODE);
-  }
-
-  getTitle() {
-    return `Flip view mode of container`;
-  }
-
-  isCompatible(context: ActionContext) {
-    return Promise.resolve(!!context.container);
-  }
-
-  execute(context: ActionContext) {
-    if (!context.container) {
-      throw new Error('Requires a container as context');
-    }
-
-    context.container.updateInput({
-      viewMode:
-        context.container.getInput().viewMode === ViewMode.VIEW ? ViewMode.EDIT : ViewMode.VIEW,
+    super({
+      name: FILTERABLE_EMBEDDABLE,
     });
   }
+
+  public getOutputSpec() {
+    return {};
+  }
+
+  public create(initialInput: FilterableEmbeddableInput, parent?: Container) {
+    return Promise.resolve(new FilterableEmbeddable(initialInput, parent));
+  }
 }
+
+embeddableFactories.registerFactory(new FilterableEmbeddableFactory());

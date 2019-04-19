@@ -17,12 +17,24 @@
  * under the License.
  */
 
-import { Embeddable, EmbeddableInput } from './embeddables';
+import { Action, ActionContext } from '../../actions';
 
-export function dispatchInputChanges<I extends EmbeddableInput>(embeddable: Embeddable<I>, changes: Partial<I>) {
-  if (embeddable.parent) {
-    embeddable.parent.updateEmbeddableInput(embeddable.id, changes);
-  } else {
-    embeddable.
+export const RESTRICTED_ACTION = 'RESTRICTED_ACTION';
+
+export class RestrictedAction extends Action {
+  private isCompatibleFn: (context: ActionContext) => boolean;
+  constructor(isCompatible: (context: ActionContext) => boolean) {
+    super(RESTRICTED_ACTION);
+    this.isCompatibleFn = isCompatible;
   }
+
+  getTitle() {
+    return `I am only sometimes compatible`;
+  }
+
+  isCompatible(context: ActionContext) {
+    return Promise.resolve(this.isCompatibleFn(context));
+  }
+
+  execute() {}
 }

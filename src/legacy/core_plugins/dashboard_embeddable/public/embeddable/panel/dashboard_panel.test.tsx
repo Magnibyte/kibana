@@ -25,13 +25,22 @@ jest.mock('ui/metadata', () => ({
 }));
 
 import { EuiLoadingChart } from '@elastic/eui';
-import { HelloWorldEmbeddable } from 'plugins/embeddable_api/__test__/embeddables/hello_world_embeddable';
+import {
+  HelloWorldEmbeddable,
+  HelloWorldInput,
+} from 'plugins/embeddable_api/__test__/embeddables/hello_world_embeddable';
 import { embeddableFactories } from 'plugins/embeddable_api/index';
 import { QueryLanguageType, ViewMode } from 'plugins/embeddable_api/types';
 import React from 'react';
 import { mountWithIntl } from 'test_utils/enzyme_helpers';
 import { DashboardContainer, DashboardContainerInput } from '../dashboard_container';
 import { DashboardPanel } from './dashboard_panel';
+import {
+  HELLO_WORLD_EMBEDDABLE,
+  FilterableEmbeddable,
+  FilterableEmbeddableInput,
+  FILTERABLE_EMBEDDABLE,
+} from 'plugins/embeddable_api/__test__';
 
 function getDashboardContainerInput(): DashboardContainerInput {
   return {
@@ -53,10 +62,15 @@ function getDashboardContainerInput(): DashboardContainerInput {
   };
 }
 
-test('DashboardPanel renders an embeddable when it is done loading', () => {
+test('DashboardPanel renders an embeddable when it is done loading', async () => {
   const container = new DashboardContainer(getDashboardContainerInput(), embeddableFactories);
-  const newEmbeddable = new HelloWorldEmbeddable({ name: 'Sue', id: '123' });
-  container.addExistingEmbeddable(newEmbeddable);
+  const newEmbeddable = await container.addNewEmbeddable<HelloWorldInput, HelloWorldEmbeddable>(
+    HELLO_WORLD_EMBEDDABLE,
+    {
+      firstName: 'Sue',
+      id: '123',
+    }
+  );
 
   expect(newEmbeddable.id).toBeDefined();
 

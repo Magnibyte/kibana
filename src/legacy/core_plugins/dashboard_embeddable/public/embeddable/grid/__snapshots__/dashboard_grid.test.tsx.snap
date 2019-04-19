@@ -43,8 +43,11 @@ exports[`renders DashboardGrid 1`] = `
     <InjectIntl(DashboardPanelUi)
       container={
         DashboardContainer {
-          "anyChangeListeners": Array [],
-          "container": undefined,
+          "anyChangeListeners": Array [
+            [Function],
+            [Function],
+          ],
+          "destoyed": false,
           "embeddableFactories": EmbeddableFactoryRegistry {
             "factories": Object {
               "hello_world": HelloWorldEmbeddableFactory {
@@ -53,7 +56,6 @@ exports[`renders DashboardGrid 1`] = `
               },
             },
           },
-          "embeddableUnsubscribes": Object {},
           "embeddables": Object {},
           "id": "123",
           "input": Object {
@@ -114,6 +116,8 @@ exports[`renders DashboardGrid 1`] = `
           },
           "outputChangeListeners": Array [],
           "panelContainer": undefined,
+          "parent": undefined,
+          "parentChangesUnsubscribe": undefined,
           "type": "dashboard",
         }
       }
@@ -132,8 +136,11 @@ exports[`renders DashboardGrid 1`] = `
     <InjectIntl(DashboardPanelUi)
       container={
         DashboardContainer {
-          "anyChangeListeners": Array [],
-          "container": undefined,
+          "anyChangeListeners": Array [
+            [Function],
+            [Function],
+          ],
+          "destoyed": false,
           "embeddableFactories": EmbeddableFactoryRegistry {
             "factories": Object {
               "hello_world": HelloWorldEmbeddableFactory {
@@ -142,7 +149,6 @@ exports[`renders DashboardGrid 1`] = `
               },
             },
           },
-          "embeddableUnsubscribes": Object {},
           "embeddables": Object {},
           "id": "123",
           "input": Object {
@@ -203,6 +209,8 @@ exports[`renders DashboardGrid 1`] = `
           },
           "outputChangeListeners": Array [],
           "panelContainer": undefined,
+          "parent": undefined,
+          "parentChangesUnsubscribe": undefined,
           "type": "dashboard",
         }
       }

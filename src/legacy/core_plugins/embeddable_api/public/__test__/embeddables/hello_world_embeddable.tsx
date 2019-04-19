@@ -32,6 +32,14 @@ export interface HelloWorldInput extends EmbeddableInput {
 
 export interface HelloWorldOutput extends EmbeddableOutput {
   name: string;
+  birthName: string;
+  birthLastName?: string;
+}
+
+function getFullName(input: HelloWorldInput) {
+  const { nameTitle, firstName, lastName } = input;
+  const nameParts = [nameTitle, firstName, lastName].filter(name => name !== undefined);
+  return nameParts.join(' ');
 }
 
 export class HelloWorldEmbeddable extends Embeddable<HelloWorldInput, HelloWorldOutput> {
@@ -39,8 +47,16 @@ export class HelloWorldEmbeddable extends Embeddable<HelloWorldInput, HelloWorld
   private node?: Element;
 
   constructor(initialInput: HelloWorldInput, parent?: Container) {
-    super(HELLO_WORLD_EMBEDDABLE, initialInput, { name: '' }, parent);
-
+    super(
+      HELLO_WORLD_EMBEDDABLE,
+      initialInput,
+      {
+        name: getFullName(initialInput),
+        birthLastName: initialInput.lastName,
+        birthName: initialInput.firstName,
+      },
+      parent
+    );
     this.unsubscribe = this.subscribeToInputChanges(() => {
       this.updateOutput({
         name: this.getFullName(),
@@ -50,17 +66,19 @@ export class HelloWorldEmbeddable extends Embeddable<HelloWorldInput, HelloWorld
   }
 
   public getFullName() {
-    const { nameTitle, firstName, lastName } = this.input;
-    const nameParts = [nameTitle, firstName, lastName].filter(name => name !== undefined);
-    return nameParts.join(' ');
+    return getFullName(this.input);
   }
 
   public graduateWithPhd() {
     this.updateInput({ nameTitle: 'Dr.' });
   }
 
-  public loseDoctorate() {
-    this.updateInput({ nameTitle: '' });
+  public getMarried(newLastName: string) {
+    this.updateInput({ lastName: newLastName });
+  }
+
+  public getDivorced() {
+    this.updateInput({ lastName: this.output.birthLastName });
   }
 
   public render(node: HTMLElement) {
@@ -71,5 +89,8 @@ export class HelloWorldEmbeddable extends Embeddable<HelloWorldInput, HelloWorld
   public destroy() {
     super.destroy();
     this.unsubscribe();
+    if (this.node) {
+      ReactDom.unmountComponentAtNode(this.node);
+    }
   }
 }

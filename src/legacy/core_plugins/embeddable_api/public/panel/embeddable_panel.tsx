@@ -28,11 +28,12 @@ import {
 
 import { Action, Container, Embeddable, CONTEXT_MENU_TRIGGER, ViewMode } from '..';
 
-import { getEditPanelAction, getInspectorPanelAction } from './panel_header/panel_actions';
+import { getEditPanelAction, RemovePanelAction } from './panel_header/panel_actions';
 import { AddPanelAction } from './panel_header/panel_actions/add_panel/add_panel_action';
 import { CustomizePanelTitleAction } from './panel_header/panel_actions/customize_title/customize_panel_action';
 import { PanelHeader } from './panel_header/panel_header';
 import { actionRegistry } from '../actions';
+import { InspectPanelAction } from './panel_header/panel_actions/inspect_panel_action';
 
 interface Props {
   embeddable: Embeddable;
@@ -102,9 +103,7 @@ export class EmbeddablePanel extends React.Component<Props, State> {
     const classes = classNames('embPanel', {
       'embPanel--editing': !viewOnlyMode,
     });
-    const customization = this.props.embeddable.getInput().customization;
-    const customizedTitle = customization ? customization.title : undefined;
-    const title = customizedTitle ? customizedTitle : this.props.embeddable.getInput().title;
+    const title = this.props.embeddable.getTitle();
     return (
       <EuiPanel className={classes} data-test-subj="embeddablePanel" paddingSize="none">
         <PanelHeader
@@ -128,7 +127,6 @@ export class EmbeddablePanel extends React.Component<Props, State> {
 
     const actions = await actionRegistry.getActionsForTrigger(CONTEXT_MENU_TRIGGER, {
       embeddable: this.props.embeddable,
-      container: this.props.container,
     });
 
     const contextMenuPanel = new ContextMenuPanel({
@@ -142,25 +140,24 @@ export class EmbeddablePanel extends React.Component<Props, State> {
       });
     };
 
-    const customizePanelAction = new CustomizePanelTitleAction();
-    if (
-      await customizePanelAction.isCompatible({
-        embeddable: this.props.embeddable,
-        container: this.props.container,
-      })
-    ) {
-      actions.push(customizePanelAction);
-    }
+    const allPanelActions = [
+      new CustomizePanelTitleAction(),
+      new AddPanelAction(),
+      new InspectPanelAction(),
+      new RemovePanelAction(),
+    ];
 
-    const addPanelAction = new AddPanelAction();
-    if (
-      await addPanelAction.isCompatible({
-        embeddable: this.props.embeddable,
-        container: this.props.container,
-      })
-    ) {
-      actions.push(addPanelAction);
-    }
+    const promises = allPanelActions.map(async action => {
+      if (
+        await action.isCompatible({
+          embeddable: this.props.embeddable,
+        })
+      ) {
+        actions.push(action);
+      }
+    });
+
+    await Promise.all(promises);
 
     const wrappedForContextMenu = actions.map((action: Action) => {
       return new ContextMenuAction<Embeddable, Container>(
@@ -168,7 +165,6 @@ export class EmbeddablePanel extends React.Component<Props, State> {
           id: action.id,
           displayName: action.getTitle({
             embeddable: this.props.embeddable,
-            container: this.props.container,
           }),
           parentPanelId: 'mainMenu',
         },
@@ -176,23 +172,16 @@ export class EmbeddablePanel extends React.Component<Props, State> {
           priority: action.priority,
           icon: action.getIcon({
             embeddable: this.props.embeddable,
-            container: this.props.container,
           }),
-          onClick: ({ embeddable, container }) => {
-            action.execute({ embeddable, container });
+          onClick: ({ embeddable }) => {
+            action.execute({ embeddable });
             closeMyContextMenuPanel();
           },
         }
       );
     });
 
-    const contextMenuActions = [
-      getInspectorPanelAction({
-        closeContextMenu: closeMyContextMenuPanel,
-        panelTitle: this.props.embeddable.getInput().title,
-      }),
-      getEditPanelAction(),
-    ].concat(wrappedForContextMenu);
+    const contextMenuActions = [getEditPanelAction()].concat(wrappedForContextMenu);
 
     const sorted = contextMenuActions.sort((a, b) => {
       return b.priority - a.priority;

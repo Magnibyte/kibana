@@ -24,6 +24,13 @@ export {
   HelloWorldEmbeddable,
   HelloWorldInput,
   HelloWorldContainer,
+  FilterableContainer,
+  FilterableEmbeddable,
+  FilterableEmbeddableFactory,
+  FILTERABLE_EMBEDDABLE,
+  FILTERABLE_CONTAINER,
+  FilterableContainerInput,
+  FilterableEmbeddableInput,
 } from './embeddables';
 
-export { SayHelloAction, EditModeAction } from './actions';
+export { SayHelloAction, EditModeAction, HelloWorldAction, RestrictedAction } from './actions';

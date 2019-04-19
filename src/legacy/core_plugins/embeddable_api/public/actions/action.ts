@@ -40,24 +40,13 @@ export interface ActionContext<E extends Embeddable = Embeddable, C extends Cont
 export abstract class Action<
   E extends Embeddable = Embeddable,
   C extends Container = Container,
-  T extends {} = {},
-  U = undefined
+  T extends {} = {}
 > {
   // Used to determine the order when there is more than one action matched to a trigger.
   // Higher numbers are displayed first.
   public priority: number = 0;
 
-  // If specified, this action is compatible with only the given type.
-  public embeddableType: string = '';
-
-  public description: string = '';
-
-  public embeddableTemplateMapping: { [key: string]: string } = {};
-
-  constructor(
-    public readonly id: string,
-    protected getDataFromUser?: (context: ExecuteActionContext<E, C, T>) => Promise<U>
-  ) {}
+  constructor(public readonly id: string) {}
 
   public getIcon(context: ActionContext): EuiContextMenuItemIcon | undefined {
     return undefined;
@@ -65,31 +54,9 @@ export abstract class Action<
 
   public abstract getTitle(context: ActionContext): string;
 
-  public isSingleton() {
-    return false;
+  public isCompatible(context: ActionContext): Promise<boolean> {
+    return Promise.resolve(true);
   }
-
-  public allowDynamicTriggerMapping() {
-    return true;
-  }
-
-  public isCompatible({ embeddable }: ActionContext<E, C>): Promise<boolean> {
-    if (this.embeddableType !== '') {
-      return Promise.resolve(!!embeddable && embeddable.type === this.embeddableType);
-    } else {
-      return Promise.resolve(true);
-    }
-  }
-
-  public async requestUserContext() {}
 
   public abstract execute(context: ExecuteActionContext<E, C, T>): void;
-
-  public allowTemplateMapping() {
-    return true;
-  }
-
-  public allowEditing() {
-    return true;
-  }
 }

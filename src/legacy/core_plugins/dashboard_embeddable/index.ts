@@ -23,10 +23,7 @@ import { resolve } from 'path';
 export default function(kibana: any) {
   return new kibana.Plugin({
     uiExports: {
-      embeddableActions: [
-        'plugins/dashboard_embeddable/actions/remove_panel_action',
-        'plugins/dashboard_embeddable/actions/expand_panel_action',
-      ],
+      embeddableActions: ['plugins/dashboard_embeddable/actions/expand_panel_action'],
       embeddableFactories: ['plugins/dashboard_embeddable/embeddable/dashboard_container_factory'],
       styleSheetPaths: resolve(__dirname, 'public/index.scss'),
     },

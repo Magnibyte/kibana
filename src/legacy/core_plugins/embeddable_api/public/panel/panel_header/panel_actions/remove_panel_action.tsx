@@ -16,18 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
+import React from 'react';
 import { i18n } from '@kbn/i18n';
-import {
-  Action,
-  actionRegistry,
-  Embeddable,
-  CONTEXT_MENU_TRIGGER,
-  triggerRegistry,
-  ViewMode,
-  ExecuteActionContext,
-} from 'plugins/embeddable_api/index';
-import { DASHBOARD_CONTAINER_TYPE, DashboardContainer } from '../embeddable';
+import { EuiIcon } from '@elastic/eui';
+import { ViewMode } from '../../../';
+import { Action, ExecuteActionContext } from '../../../actions';
+import { Embeddable } from '../../../embeddables';
 
 export const REMOVE_PANEL_ACTION = 'REMOVE_PANEL_ACTION';
 
@@ -39,37 +33,25 @@ export class RemovePanelAction extends Action {
   }
 
   public getTitle() {
-    return i18n.translate('kbn.dashboard.panel.removePanel.displayName', {
+    return i18n.translate('kbn.embeddable.panel.removePanel.displayName', {
       defaultMessage: 'Delete from dashboard',
     });
   }
 
-  public isCompatible({
-    embeddable,
-    container,
-  }: {
-    embeddable: Embeddable;
-    container: DashboardContainer;
-  }) {
+  public getIcon() {
+    return <EuiIcon type="trash" />;
+  }
+
+  public isCompatible({ embeddable }: { embeddable: Embeddable }) {
     return Promise.resolve(
-      container &&
-        container.type === DASHBOARD_CONTAINER_TYPE &&
-        embeddable.getInput().viewMode === ViewMode.EDIT &&
-        container.getInput().expandedPanelId !== embeddable.id
+      Boolean(embeddable.parent && embeddable.getInput().viewMode === ViewMode.EDIT)
     );
   }
 
-  public execute({ embeddable, container }: ExecuteActionContext<Embeddable, DashboardContainer>) {
-    if (!container) {
-      throw new Error('Remove action requires a container');
+  public execute({ embeddable }: ExecuteActionContext<Embeddable>) {
+    if (!embeddable.parent) {
+      throw new Error('Remove action requires embeddable to be in a container');
     }
-    container.removeEmbeddable(embeddable.id);
+    embeddable.parent.removeEmbeddable(embeddable.id);
   }
 }
-
-actionRegistry.addAction(new RemovePanelAction());
-
-triggerRegistry.attachAction({
-  triggerId: CONTEXT_MENU_TRIGGER,
-  actionId: REMOVE_PANEL_ACTION,
-});

@@ -581,6 +581,10 @@ export class DashboardAppController {
     this.dashboardStateManager.getPanels().forEach((panel: SavedDashboardPanel) => {
       embeddablesMap[panel.panelIndex] = convertSavedDashboardPanelToPanelState(panel);
     });
+    let expandedPanelId;
+    if (this.dashboardContainer && !isErrorEmbeddable(this.dashboardContainer)) {
+      expandedPanelId = this.dashboardContainer.getInput().expandedPanelId;
+    }
     return {
       id: this.dashboardStateManager.savedDashboard.id || '',
       filters: this.$scope.model.filters,
@@ -598,6 +602,7 @@ export class DashboardAppController {
       lastReloadRequestTime: this.$scope.lastReloadRequestTime,
       title: this.dashboardStateManager.getTitle(),
       description: this.dashboardStateManager.getDescription(),
+      expandedPanelId,
     };
   }
 

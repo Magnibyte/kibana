@@ -33,31 +33,34 @@ jest.mock('ui/capabilities', () => ({
 }));
 
 import React from 'react';
-import { HELLO_WORLD_EMBEDDABLE, HelloWorldEmbeddableFactory } from '../../../../__test__/index';
+import {
+  HELLO_WORLD_EMBEDDABLE,
+  HelloWorldEmbeddableFactory,
+  HelloWorldContainer,
+} from '../../../../__test__/index';
 
 import { AddPanelFlyout } from './add_panel_flyout';
 import { Container } from 'plugins/embeddable_api/containers';
 import { EmbeddableFactoryRegistry } from 'plugins/embeddable_api/embeddables';
 // @ts-ignore
 import { findTestSubject } from '@elastic/eui/lib/test';
-import { mountWithIntl } from 'test_utils/enzyme_helpers';
+import { mountWithIntl, shallowWithIntl } from 'test_utils/enzyme_helpers';
 
 const onClose = jest.fn();
 let container: Container;
 
-beforeEach(() => {
+function createHelloWorldContainer(input = { id: '123', panels: {} }) {
   const embeddableFactories = new EmbeddableFactoryRegistry();
   embeddableFactories.registerFactory(new HelloWorldEmbeddableFactory());
-  container = new Container(
-    'test',
-    { id: '123', panels: {} },
-    { embeddableLoaded: {} },
-    embeddableFactories
-  );
+  return new HelloWorldContainer(input, embeddableFactories);
+}
+
+beforeEach(() => {
+  container = createHelloWorldContainer();
 });
 
 test('matches snapshot', async () => {
-  const component = mountWithIntl(<AddPanelFlyout container={container} onClose={onClose} />);
+  const component = shallowWithIntl(<AddPanelFlyout container={container} onClose={onClose} />);
 
   expect(component).toMatchSnapshot();
 });
@@ -68,8 +71,11 @@ test('adds a panel to the container', async done => {
   expect(Object.values(container.getInput().panels).length).toBe(0);
 
   const unsubscribe = container.subscribeToInputChanges(input => {
-    expect(Object.values(input.panels).length).toBe(1);
-    unsubscribe();
+    expect(input.panels).toBeDefined();
+    if (input.panels) {
+      expect(Object.values(input.panels).length).toBe(1);
+      unsubscribe();
+    }
     done();
   });
 

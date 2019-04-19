@@ -46,6 +46,7 @@ export interface VisualizeEmbeddableConfiguration {
   indexPatterns?: StaticIndexPattern[];
   editUrl: string;
   loader: VisualizeLoader;
+  editable: boolean;
 }
 
 // interface VisualizeOverrides {
@@ -63,7 +64,6 @@ export interface VisualizeInput extends EmbeddableInput {
   vis?: {
     colors?: { [key: string]: string };
   };
-  title?: string;
 }
 
 export interface VisualizeOutput extends EmbeddableOutput {
@@ -82,7 +82,13 @@ export class VisualizeEmbeddable extends Embeddable<VisualizeInput, VisualizeOut
   private filters?: Filters;
 
   constructor(
-    { savedVisualization, indexPatterns, editUrl, loader }: VisualizeEmbeddableConfiguration,
+    {
+      savedVisualization,
+      loader,
+      editUrl,
+      indexPatterns,
+      editable,
+    }: VisualizeEmbeddableConfiguration,
     initialInput: VisualizeInput,
     parent?: Container
   ) {
@@ -93,6 +99,7 @@ export class VisualizeEmbeddable extends Embeddable<VisualizeInput, VisualizeOut
         title: savedVisualization.title,
         editUrl,
         indexPatterns,
+        editable,
       },
       parent
     );

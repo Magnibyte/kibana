@@ -38,6 +38,9 @@ class TriggerRegistry {
   public registerTrigger(trigger: Trigger) {
     this.triggers.push(trigger);
   }
+  public reset() {
+    this.triggers = [];
+  }
 
   public detachAction({ triggerId, actionId }: { triggerId: string; actionId: string }) {
     const trigger = this.getTrigger(triggerId);

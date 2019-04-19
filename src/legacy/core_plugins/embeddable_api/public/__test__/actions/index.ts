@@ -17,6 +17,7 @@
  * under the License.
  */
 
+export { HelloWorldAction } from './hello_world_action';
 export { SayHelloAction } from './say_hello_action';
 export { EditModeAction } from './edit_mode_action';
-export { ChangeViewModeAction } from './change_view_mode';
+export { RestrictedAction } from './restricted_action';

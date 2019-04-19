@@ -16,23 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
-import { getNewPlatform } from 'ui/new_platform';
-import { ExecuteActionContext } from 'plugins/embeddable_api/actions';
-import { AddPanelFlyout } from './add_panel_flyout';
 
-export async function getActionData(context: ExecuteActionContext) {
-  return new Promise<{ title: string | undefined }>(resolve => {
-    getNewPlatform().setup.core.overlays.openFlyout(
-      <AddPanelFlyout
-        container={context.container}
-        embeddable={context.embeddable}
-        onReset={() => resolve({ title: undefined })}
-        onUpdatePanelTitle={title => resolve({ title })}
-      />,
-      {
-        'data-test-subj': 'addPanelFlyout',
-      }
-    );
-  });
+import { Action } from '../../actions';
+
+export const HELLO_WORLD_ACTION = 'HELLO_WORLD_ACTION';
+
+export class HelloWorldAction extends Action {
+  constructor() {
+    super(HELLO_WORLD_ACTION);
+  }
+
+  getTitle() {
+    return 'Hello world!';
+  }
+
+  execute() {
+    alert('Hello world!');
+  }
 }

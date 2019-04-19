@@ -18,7 +18,7 @@
  */
 
 export { triggerRegistry, Trigger } from './trigger_registry';
-export { executeTriggerActions } from './trigger_actions';
+export { executeTriggerActions } from './execute_trigger_actions';
 
 export const CONTEXT_MENU_TRIGGER = 'CONTEXT_MENU_TRIGGER';
 export const APPLY_FILTER_TRIGGER = 'FITLER_TRIGGER';
